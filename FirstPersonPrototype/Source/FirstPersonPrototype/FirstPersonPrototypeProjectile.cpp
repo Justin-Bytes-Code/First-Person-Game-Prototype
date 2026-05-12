@@ -2,7 +2,10 @@
 
 #include "FirstPersonPrototypeProjectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Components/SphereComponent.h"
+#include "Components/DecalComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 AFirstPersonPrototypeProjectile::AFirstPersonPrototypeProjectile() 
 {
@@ -16,8 +19,14 @@ AFirstPersonPrototypeProjectile::AFirstPersonPrototypeProjectile()
 	CollisionComp->SetWalkableSlopeOverride(FWalkableSlopeOverride(WalkableSlope_Unwalkable, 0.f));
 	CollisionComp->CanCharacterStepUpOn = ECB_No;
 
+	// Creates Ball Mesh
+	ballMesh = CreateDefaultSubobject<UStaticMeshComponent>("Ball Mesh");
+
 	// Set as root component
 	RootComponent = CollisionComp;
+
+	// Set Up Attachements from ball mesh to collusion 
+	ballMesh->SetupAttachment(CollisionComp);
 
 	// Use a ProjectileMovementComponent to govern this projectile's movement
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileComp"));
@@ -39,5 +48,27 @@ void AFirstPersonPrototypeProjectile::OnHit(UPrimitiveComponent* HitComp, AActor
 		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
 
 		Destroy();
+	}
+
+	// Spawns Decal
+	if (OtherActor != nullptr)
+	{
+
+
+		float ranNumX = UKismetMathLibrary::RandomFloatInRange(0.f, 1.f);
+		float ranNumY = UKismetMathLibrary::RandomFloatInRange(0.f, 1.f);
+		float ranNumZ = UKismetMathLibrary::RandomFloatInRange(0.f, 1.f);
+		float frameNum = UKismetMathLibrary::RandomFloatInRange(0.f, 3.f);
+
+		FVector4 randColor = FVector4(ranNumX, ranNumY, ranNumZ, 1.f);
+
+		// Spawns a decal at location. We are using FVector to set the decal size. Hit  location  is for where the decal will be placed. Hit Normal rotation is so our decal faces the correct direction. 
+		// 0.f is our lifespan of the decal (It's 0.f so it lives forever right now)
+
+		auto Decal = UGameplayStatics::SpawnDecalAtLocation(GetWorld(), baseMat, FVector(UKismetMathLibrary::RandomFloatInRange(20.f, 40.f)), Hit.Location, Hit.Normal.Rotation(), 0.f);
+		auto MatInstance = Decal->CreateDynamicMaterialInstance();
+
+		MatInstance->SetVectorParameterValue("Color", randColor);
+		MatInstance->SetScalarParameterValue("Frame", frameNum);
 	}
 }
