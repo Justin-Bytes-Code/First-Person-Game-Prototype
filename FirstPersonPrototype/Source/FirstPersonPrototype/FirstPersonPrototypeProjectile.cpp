@@ -40,6 +40,17 @@ AFirstPersonPrototypeProjectile::AFirstPersonPrototypeProjectile()
 	InitialLifeSpan = 3.0f;
 }
 
+void AFirstPersonPrototypeProjectile::BeginPlay()
+{
+	Super::BeginPlay();
+	randColor = FLinearColor(UKismetMathLibrary::RandomFloatInRange(0.f, 1.f), UKismetMathLibrary::RandomFloatInRange(0.f, 1.f), UKismetMathLibrary::RandomFloatInRange(0.f, 1.f), 1.f);
+
+	dmiMat = UMaterialInstanceDynamic::Create(projMat, this);
+	ballMesh->SetMaterial(0, dmiMat);
+
+	dmiMat->SetVectorParameterValue("ProjColor", randColor);
+}
+
 void AFirstPersonPrototypeProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	// Only add impulse and destroy projectile if we hit a physics
@@ -55,12 +66,8 @@ void AFirstPersonPrototypeProjectile::OnHit(UPrimitiveComponent* HitComp, AActor
 	{
 
 
-		float ranNumX = UKismetMathLibrary::RandomFloatInRange(0.f, 1.f);
-		float ranNumY = UKismetMathLibrary::RandomFloatInRange(0.f, 1.f);
-		float ranNumZ = UKismetMathLibrary::RandomFloatInRange(0.f, 1.f);
 		float frameNum = UKismetMathLibrary::RandomFloatInRange(0.f, 3.f);
 
-		FVector4 randColor = FVector4(ranNumX, ranNumY, ranNumZ, 1.f);
 
 		// Spawns a decal at location. We are using FVector to set the decal size. Hit  location  is for where the decal will be placed. Hit Normal rotation is so our decal faces the correct direction. 
 		// 0.f is our lifespan of the decal (It's 0.f so it lives forever right now)

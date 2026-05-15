@@ -27,10 +27,24 @@ class AFirstPersonPrototypeProjectile : public AActor
 		UStaticMeshComponent* ballMesh;
 
 	UPROPERTY(EditAnywhere)
-		UMaterialInterface* baseMat = nullptr;
+		UMaterial* baseMat;
+
+	UPROPERTY()
+		FLinearColor randColor;
+
+	UPROPERTY(EditAnywhere)
+		UMaterialInterface* projMat;
+
+	UPROPERTY()
+		UMaterialInstanceDynamic* dmiMat;
 
 public:
 	AFirstPersonPrototypeProjectile();
+
+protected:
+	virtual void BeginPlay();
+
+public:
 
 	/** called when projectile hits something */
 	UFUNCTION()
