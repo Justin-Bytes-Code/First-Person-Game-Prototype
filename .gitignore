@@ -165,3 +165,5 @@ Intermediate/
 Plugins/*/Intermediate/*
 
 UpgradeLog.htm
+*.exp
+*.pdb
