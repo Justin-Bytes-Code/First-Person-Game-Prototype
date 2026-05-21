@@ -71,18 +71,12 @@ void AFirstPersonPrototypeProjectile::OnHit(UPrimitiveComponent* HitComp, AActor
 		{
 			//Spawns Particles
 			UNiagaraComponent* particleComp = UNiagaraFunctionLibrary::SpawnSystemAttached(colorP, HitComp, NAME_None, FVector(-20.f, 0.f, 0.f), FRotator(0.f), EAttachLocation::KeepRelativeOffset, true);
-			particleComp->SetNiagaraVariableLinearColor(FString("RandomColor"), randColor);
+			particleComp->SetNiagaraVariableLinearColor(FString("RandomColor"), randColor); //Sets Color
 			ballMesh->DestroyComponent();
 			CollisionComp->BodyInstance.SetCollisionProfileName("NoCollision");
 		}
 
-
-
-
-
-
 		float frameNum = UKismetMathLibrary::RandomFloatInRange(0.f, 3.f);
-
 
 		// Spawns a decal at location. We are using FVector to set the decal size. Hit  location  is for where the decal will be placed. Hit Normal rotation is so our decal faces the correct direction. 
 		// 0.f is our lifespan of the decal (It's 0.f so it lives forever right now)
