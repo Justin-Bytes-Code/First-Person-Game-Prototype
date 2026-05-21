@@ -6,6 +6,8 @@
 #include "Components/SphereComponent.h"
 #include "Components/DecalComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 
 AFirstPersonPrototypeProjectile::AFirstPersonPrototypeProjectile() 
 {
@@ -64,6 +66,19 @@ void AFirstPersonPrototypeProjectile::OnHit(UPrimitiveComponent* HitComp, AActor
 	// Spawns Decal
 	if (OtherActor != nullptr)
 	{
+		//Checks if Color P is Set
+		if (colorP)
+		{
+			//Spawns Particles
+			UNiagaraComponent* particleComp = UNiagaraFunctionLibrary::SpawnSystemAttached(colorP, HitComp, NAME_None, FVector(-20.f, 0.f, 0.f), FRotator(0.f), EAttachLocation::KeepRelativeOffset, true);
+			particleComp->SetNiagaraVariableLinearColor(FString("RandomColor"), randColor);
+			ballMesh->DestroyComponent();
+			CollisionComp->BodyInstance.SetCollisionProfileName("NoCollision");
+		}
+
+
+
+
 
 
 		float frameNum = UKismetMathLibrary::RandomFloatInRange(0.f, 3.f);
@@ -71,7 +86,6 @@ void AFirstPersonPrototypeProjectile::OnHit(UPrimitiveComponent* HitComp, AActor
 
 		// Spawns a decal at location. We are using FVector to set the decal size. Hit  location  is for where the decal will be placed. Hit Normal rotation is so our decal faces the correct direction. 
 		// 0.f is our lifespan of the decal (It's 0.f so it lives forever right now)
-
 		auto Decal = UGameplayStatics::SpawnDecalAtLocation(GetWorld(), baseMat, FVector(UKismetMathLibrary::RandomFloatInRange(20.f, 40.f)), Hit.Location, Hit.Normal.Rotation(), 0.f);
 		auto MatInstance = Decal->CreateDynamicMaterialInstance();
 
