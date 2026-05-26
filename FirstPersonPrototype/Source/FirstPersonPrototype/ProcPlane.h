@@ -35,8 +35,20 @@ public:
 	UPROPERTY(EditAnywhere)
 		TArray<int> Triangles;
 
+
+	//Handles Materials on generated Models. 
+	UPROPERTY(EditAnywhere)
+		TArray<FVector2D> UV0;
+
+	UPROPERTY(EditAnywhere)
+		UMaterialInterface* PlaneMat;
+
 	UFUNCTION()
 		void CreateMesh();
+
+
+
+	
 
 private:
 	UProceduralMeshComponent* procMesh;
