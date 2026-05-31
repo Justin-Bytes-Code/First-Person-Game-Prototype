@@ -87,6 +87,9 @@ void AFirstPersonPrototypeProjectile::OnHit(UPrimitiveComponent* HitComp, AActor
 		MatInstance->SetVectorParameterValue("Color", randColor);
 		MatInstance->SetScalarParameterValue("Frame", frameNum);
 
+
+
+		//Allows you to deform the terrerian in the proc terrain map
 		APerlinProcTerrain* procTerrain = Cast<APerlinProcTerrain>(OtherActor);
 
 		if (procTerrain)
