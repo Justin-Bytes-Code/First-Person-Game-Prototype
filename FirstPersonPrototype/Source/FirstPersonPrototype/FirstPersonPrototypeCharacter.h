@@ -44,9 +44,15 @@ class AFirstPersonPrototypeCharacter : public ACharacter
 	/** Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* LookAction;
+
+
 	
 public:
 	AFirstPersonPrototypeCharacter();
+
+	//Teleporting Check
+	UPROPERTY(EditAnywhere)
+	bool isTeleporting;
 
 protected:
 	/** Called for movement input */
