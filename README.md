@@ -61,6 +61,7 @@ Most Features inside of this prototype are a bit more barebone then I normally c
 
 While I'm unsure if I plan to go back into this project. I am thinking about implementing the following feature just for players so they can see it a bit better so I can export it to Itch. 
 
-- A Button Allowing For A Map Change To The Perlin Noise Generation Map. 
+- ~~A Button Allowing For A Map Change To The Perlin Noise Generation Map.~~ Completed! 
+- Add to Itch.io! 
 
 ---
