@@ -4,6 +4,7 @@
 #include "Portal.h"
 #include "FirstPersonPrototypeCharacter.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/ArrowComponent.h"
 
 // Sets default values
 APortal::APortal()
@@ -15,12 +16,19 @@ APortal::APortal()
 	mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
 	boxComp = CreateDefaultSubobject<UBoxComponent>("Box Comp");
 	sceneCapture = CreateDefaultSubobject<USceneCaptureComponent2D>("Capture");
+	PlayerDirection = CreateDefaultSubobject<UArrowComponent>(TEXT("PlayerDirectionArrow"));
 
 	RootComponent = boxComp;
 	mesh->SetupAttachment(boxComp);
 	sceneCapture->SetupAttachment(mesh);
 
 	mesh->SetCollisionResponseToAllChannels(ECR_Ignore);
+
+	if (RootComponent)
+	{
+		PlayerDirection->SetupAttachment(RootComponent);
+	}
+
 
 }
 
@@ -30,7 +38,6 @@ void APortal::BeginPlay()
 	Super::BeginPlay();
 	boxComp->OnComponentBeginOverlap.AddDynamic(this, &APortal::OnOverLapBegin);
 	mesh->SetHiddenInSceneCapture(true);
-
 
 	// Checks if material is valid. 
 	if (mat) {
@@ -48,9 +55,18 @@ void APortal::Tick(float DeltaTime)
 
 }
 
+#include "Engine/Engine.h" //GEngine
+
 void APortal::OnOverLapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	AFirstPersonPrototypeCharacter* playerChar = Cast<AFirstPersonPrototypeCharacter>(OtherActor);
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Portal Teleport Activated"));
+	}
+
+	
 
 	if (playerChar)
 	{
@@ -61,6 +77,23 @@ void APortal::OnOverLapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 				playerChar->isTeleporting = true;
 				FVector loc = OtherPortal->GetActorLocation();
 				playerChar->SetActorLocation(loc);
+
+				// new 
+				//FRotator rot = OtherPortal->GetActorRotation();
+				//playerChar->SetActorRotation(rot);
+				
+
+				// 2. ACTIVATE THE ROTATION (We call our custom function using the destination portal's layout)
+				OtherPortal->RotatePlayerToArrow(playerChar);
+
+				//if (PlayerDirection && playerChar) 
+				//{
+				//	FRotator TargetRotation = PlayerDirection->GetComponentRotation();
+				//	playerChar->SetActorRotation(TargetRotation);
+				//}
+
+
+				//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, rot.ToString());
 
 				FTimerHandle TimerHandle; 
 				FTimerDelegate TimerDelegate; 
@@ -81,7 +114,45 @@ if (playerChar)
 }
 }
 
+void APortal::RotatePlayerToArrow(ACharacter* playerChar)
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, TEXT("3. Inside RotatePlayerToArrow Function!"));
+	}
 
+	if (!PlayerDirection)
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("ERROR: PlayerDirection Arrow Component is NULL!"));
+		}
+		return;
+	}
+
+	if (!playerChar)
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("ERROR: playerChar is NULL inside rotation function!"));
+		}
+		return;
+	}
+
+	// If everything passed, execute rotation
+	FRotator TargetRotation = PlayerDirection->GetComponentRotation();
+	playerChar->SetActorRotation(TargetRotation);
+
+	if (APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0))
+	{
+		PC->SetControlRotation(TargetRotation);
+
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("SUCCESS: Camera Snapped to: %s"), *TargetRotation.ToString()));
+		}
+	}
+}
 
 void APortal::UpdatePortals()
 {

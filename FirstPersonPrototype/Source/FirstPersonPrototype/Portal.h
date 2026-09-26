@@ -7,6 +7,7 @@
 #include "Components/SceneCaptureComponent2D.h"
 #include "Engine/TextRenderActor.h"
 #include "Components/BoxComponent.h"
+#include "Components/ArrowComponent.h"
 #include "Portal.generated.h"
 
 class AFirstPersonPrototypeCharacter;
@@ -50,11 +51,22 @@ public:
 	UPROPERTY(EditAnywhere)
 	UMaterialInterface* mat;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
+	class UArrowComponent* PlayerDirection;
+
+	//UPROPERTY(EditAnywhere)
+	//UArrowComponent* PlayerDirection;
+
+	//UPROPERTY()
+	//class UObject* Obsolete_PlayerDirection;
+
 	UFUNCTION()
 	void OnOverLapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UFUNCTION()
 	void SetBool(AFirstPersonPrototypeCharacter* playerChar);
+
+	void RotatePlayerToArrow(ACharacter* playerChar);
 
 	UFUNCTION()
 	void UpdatePortals();
